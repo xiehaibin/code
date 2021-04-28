@@ -10,7 +10,8 @@ const {ccclass, property} = cc._decorator;
 /**
  * 游戏入口 
  * @author hayden
- * @date 2021/4/28
+ * @date 2021/4/28 
+ * vv
  */
 @ccclass
 export default class GameMain extends cc.Component 
