@@ -1,0 +1,8 @@
+[
+	{"id":"Panel","name":"Panel"},
+	{"id":"Common","name":"Common"},
+	{"id":"Item","name":"Item"},
+	{"id":"LanText","name":"LanText"},
+	{"id":"LanTextError","name":"LanTextError"},
+	{"id":"LanType","name":"LanType"}
+]

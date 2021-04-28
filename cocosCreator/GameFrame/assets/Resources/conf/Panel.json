@@ -1,0 +1,14 @@
+{
+	"testPanel":{
+		"path":"prefabs/panel/testPanel",
+		"panelId":1,
+		"conditionType":1,
+		"condition":0
+	},
+	"testPanel1":{
+		"path":"prefabs/panel/testPanel1",
+		"panelId":2,
+		"conditionType":1,
+		"condition":0
+	}
+}

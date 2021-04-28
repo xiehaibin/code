@@ -1,0 +1,50 @@
+{
+    "1": {
+        "contentId": "lan_zh", 
+        "fontResId": "ttf1", 
+        "id": 1, 
+        "name": "简体中文"
+    }, 
+    "2": {
+        "contentId": "lan_gb", 
+        "fontResId": "ttf1", 
+        "id": 2, 
+        "name": "繁體中文"
+    }, 
+    "3": {
+        "contentId": "lan_en", 
+        "fontResId": "ttf2", 
+        "id": 3, 
+        "name": "English"
+    }, 
+    "4": {
+        "contentId": "lan_fr", 
+        "fontResId": "ttf2", 
+        "id": 4, 
+        "name": "Français "
+    }, 
+    "5": {
+        "contentId": "lan_de", 
+        "fontResId": "ttf2", 
+        "id": 5, 
+        "name": "Deutsch"
+    }, 
+    "6": {
+        "contentId": "lan_es", 
+        "fontResId": "ttf2", 
+        "id": 6, 
+        "name": "Español"
+    }, 
+    "7": {
+        "contentId": "lan_po", 
+        "fontResId": "ttf2", 
+        "id": 7, 
+        "name": "Português"
+    }, 
+    "8": {
+        "contentId": "lan_ru", 
+        "fontResId": "ttf2", 
+        "id": 8, 
+        "name": "Pусский"
+    }
+}

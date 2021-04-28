@@ -1,0 +1,302 @@
+{
+    "1": {
+        "Content": "IniGold", 
+        "Id": 1, 
+        "value": "20000", 
+        "System": 1
+    }, 
+    "2": {
+        "Content": "IniDiamond", 
+        "Id": 2, 
+        "value": "100", 
+        "System": 1
+    }, 
+    "3": {
+        "Content": "IniGoldUpSpeed", 
+        "Id": 3, 
+        "value": "0", 
+        "System": 1
+    }, 
+    "4": {
+        "Content": "IniReputation", 
+        "Id": 4, 
+        "value": "0", 
+        "System": 1
+    }, 
+    "5": {
+        "Content": "IniLevel", 
+        "Id": 5, 
+        "value": "1", 
+        "System": 1
+    }, 
+    "6": {
+        "Content": "IniRealState", 
+        "Id": 6, 
+        "value": "100", 
+        "System": 1
+    }, 
+    "7": {
+        "Content": "IniKnowledge", 
+        "Id": 7, 
+        "value": "100", 
+        "System": 1
+    }, 
+    "8": {
+        "Content": "IniInvestmentPoint", 
+        "Id": 8, 
+        "value": "100", 
+        "System": 1
+    }, 
+    "1201": {
+        "Content": "RoleShopFreshDiamond", 
+        "Id": 1201, 
+        "value": "25", 
+        "System": 12
+    }, 
+    "401": {
+        "Content": "EstateIniChallengeTimes", 
+        "Id": 401, 
+        "value": "10", 
+        "System": 5
+    }, 
+    "402": {
+        "Content": "EstateChallengeTimesLimit", 
+        "Id": 402, 
+        "value": "10", 
+        "System": 5
+    }, 
+    "403": {
+        "Content": "EstateChallengeTimesRefreshCd", 
+        "Id": 403, 
+        "value": "1800", 
+        "System": 5
+    }, 
+    "404": {
+        "Content": "EstateChallengeTimesBuyDiamond", 
+        "Id": 404, 
+        "value": "5", 
+        "System": 5
+    }, 
+    "405": {
+        "Content": "EstateChallengeTimesBuyLimit", 
+        "Id": 405, 
+        "value": "20", 
+        "System": 5
+    }, 
+    "406": {
+        "Content": "EstateChallengeAwardMaxTime", 
+        "Id": 406, 
+        "value": "7200", 
+        "System": 5
+    }, 
+    "901": {
+        "Content": "GlobalTalentFavorQuantityDaily", 
+        "Id": 901, 
+        "value": "20", 
+        "System": 9
+    }, 
+    "801": {
+        "Content": "LuckDrawMaxLuckPoint", 
+        "Id": 801, 
+        "value": "250", 
+        "System": 8
+    }, 
+    "802": {
+        "Content": "LuckDrawIniFreeCount", 
+        "Id": 802, 
+        "value": "1", 
+        "System": 8
+    }, 
+    "803": {
+        "Content": "LuckDrawInPoolRate", 
+        "Id": 803, 
+        "value": "5000", 
+        "System": 8
+    }, 
+    "804": {
+        "Content": "LuckDrawOutPoolRate", 
+        "Id": 804, 
+        "value": "3000", 
+        "System": 8
+    }, 
+    "805": {
+        "Content": "LuckDrawDiamondLimit", 
+        "Id": 805, 
+        "value": "20000", 
+        "System": 8
+    }, 
+    "806": {
+        "Content": "LuckDrawOneTimeDiamond", 
+        "Id": 806, 
+        "value": "60", 
+        "System": 8
+    }, 
+    "807": {
+        "Content": "LuckDrawTenTimeDiamond", 
+        "Id": 807, 
+        "value": "500", 
+        "System": 8
+    }, 
+    "808": {
+        "Content": "LuckDrawIncreaseLuckyPoint", 
+        "Id": 808, 
+        "value": "1", 
+        "System": 8
+    }, 
+    "301": {
+        "Content": "InvestmentTimesRefreshCD", 
+        "Id": 301, 
+        "value": "82800", 
+        "System": 4
+    }, 
+    "302": {
+        "Content": "InvestmentTimesBuytDiamond", 
+        "Id": 302, 
+        "value": "80", 
+        "System": 4
+    }, 
+    "303": {
+        "Content": "InvestmentTimesBuyCD", 
+        "Id": 303, 
+        "value": "28800", 
+        "System": 4
+    }, 
+    "304": {
+        "Content": "InvestmentProgrammeFreeTimes", 
+        "Id": 304, 
+        "value": "5", 
+        "System": 4
+    }, 
+    "305": {
+        "Content": "InvestmentProgrammeRefreshCD", 
+        "Id": 305, 
+        "value": "28800", 
+        "System": 4
+    }, 
+    "306": {
+        "Content": "InvestmentProgrammeBuytDiamond", 
+        "Id": 306, 
+        "value": "3", 
+        "System": 4
+    }, 
+    "701": {
+        "Content": "WorshipReward", 
+        "Id": 701, 
+        "value": "10", 
+        "System": 7
+    }, 
+    "1013": {
+        "Content": "R3_RecyclePrice", 
+        "Id": 1013, 
+        "value": "80", 
+        "System": 10
+    }, 
+    "201": {
+        "Content": "AbilityRation1", 
+        "Id": 201, 
+        "value": "10000", 
+        "System": 3
+    }, 
+    "202": {
+        "Content": "AbilityRation2", 
+        "Id": 202, 
+        "value": "10000", 
+        "System": 3
+    }, 
+    "203": {
+        "Content": "AbilityRation3", 
+        "Id": 203, 
+        "value": "10000", 
+        "System": 3
+    }, 
+    "204": {
+        "Content": "AbilityRation4", 
+        "Id": 204, 
+        "value": "10000", 
+        "System": 3
+    }, 
+    "1101": {
+        "Content": "WatchVideoQuantityDaily", 
+        "Id": 1101, 
+        "value": "1_30;2_20", 
+        "System": 11
+    }, 
+    "902": {
+        "Content": "GlobalTalentAppointmentQuantityDaily", 
+        "Id": 902, 
+        "value": "3", 
+        "System": 9
+    }, 
+    "601": {
+        "Content": "", 
+        "Id": 601, 
+        "value": "13,424|-204,424|220,424|-120,186|110,186|0,320", 
+        "System": 0
+    }, 
+    "602": {
+        "Content": "", 
+        "Id": 602, 
+        "value": "-222,424|238,424|-222,194|238,194|-10,100|0,320", 
+        "System": 0
+    }, 
+    "603": {
+        "Content": "", 
+        "Id": 603, 
+        "value": "RoleUpgrade_01;buildingStrLVLimit|RoleUpgrade_02;roleEmployLimit|RoleUpgrade_03;investCount|RoleUpgrade_04;goldSpeedMultiple%", 
+        "System": 0
+    }, 
+    "101": {
+        "Content": "BuildingStrengthenMaxLv", 
+        "Id": 101, 
+        "value": "999", 
+        "System": 2
+    }, 
+    "1001": {
+        "Content": "RoleStrengthCostRecycleRate", 
+        "Id": 1001, 
+        "value": "10000", 
+        "System": 10
+    }, 
+    "1002": {
+        "Content": "RoleGraduateCostRecycleRate", 
+        "Id": 1002, 
+        "value": "10000", 
+        "System": 10
+    }, 
+    "1011": {
+        "Content": "R1_RecyclePrice", 
+        "Id": 1011, 
+        "value": "50", 
+        "System": 10
+    }, 
+    "1012": {
+        "Content": "R2_RecyclePrice", 
+        "Id": 1012, 
+        "value": "50", 
+        "System": 10
+    }, 
+    "501": {
+        "Content": "CommercialWarDiceCostDiamond", 
+        "Id": 501, 
+        "value": "5", 
+        "System": 6
+    }, 
+    "1014": {
+        "Content": "R4_RecyclePrice", 
+        "Id": 1014, 
+        "value": "100", 
+        "System": 10
+    }, 
+    "1015": {
+        "Content": "R5_RecyclePrice", 
+        "Id": 1015, 
+        "value": "100", 
+        "System": 10
+    }, 
+    "1016": {
+        "Content": "R6_RecyclePrice", 
+        "Id": 1016, 
+        "value": "100", 
+        "System": 10
+    }
+}
