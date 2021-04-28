@@ -8,8 +8,9 @@ import { Student, Student1 } from "./frame/protobuff/proto";
 const {ccclass, property} = cc._decorator;
 
 /**
- * 游戏入口
+ * 游戏入口 
  * @author hayden
+ * @date 2021/4/28
  */
 @ccclass
 export default class GameMain extends cc.Component 
