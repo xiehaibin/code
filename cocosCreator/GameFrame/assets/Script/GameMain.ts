@@ -66,8 +66,6 @@ export default class GameMain extends cc.Component
     {
     }
 }
-
-
 /**
  // let student:Student = Student.create();
         // student.name  = "xiehaibin";

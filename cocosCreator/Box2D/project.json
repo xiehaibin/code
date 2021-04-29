@@ -1,0 +1,8 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.4.3",
+  "name": "Box2D",
+  "id": "176a6254-9b06-43cb-85c7-4d0ca6268f47",
+  "isNew": false
+}
