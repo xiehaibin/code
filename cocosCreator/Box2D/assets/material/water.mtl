@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.Material",
+  "_name": "water",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "c104053f-106e-4de4-9830-fa5d9fdea9b2"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true,
+        "USE_ALPHA_TEST": true,
+        "INPUT_IS_GAMMA": false
+      },
+      "props": {
+        "alphaThreshold": 0.5
+      }
+    }
+  }
+}

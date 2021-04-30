@@ -1,0 +1,21 @@
+{
+  "__type__": "cc.Material",
+  "_name": "waterAlphaTest",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "0f12f0a2-dd15-4534-95cd-67c6cf1de7a0"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "props": {
+        "alphaThreshold": 0.3
+      },
+      "defines": {
+        "USE_TEXTURE": false,
+        "USE_ALPHA_TEST": true
+      }
+    }
+  }
+}

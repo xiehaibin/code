@@ -237,8 +237,6 @@ cc.Class({
             }
         }
 
-        // console.log(index1 + ' : ' + index2);
-
         if (index1 === undefined || index2 === undefined) 
         {
             debugger
@@ -316,26 +314,26 @@ cc.Class({
         let startPoint = this.touchStartPoint;
         let point = this.touchPoint;
 
-        this.ctx.clear();
-        this.ctx.moveTo(this.touchStartPoint.x, this.touchStartPoint.y);
-        this.ctx.lineTo(point.x, point.y);
-        this.ctx.stroke();
+        // this.ctx.clear();
+        // this.ctx.moveTo(this.touchStartPoint.x, this.touchStartPoint.y);
+        // this.ctx.lineTo(point.x, point.y);
+        // this.ctx.stroke();
 
         let manager = cc.director.getPhysicsManager();
 
-        // manager.rayCast() method calls this function only when it sees that a given line gets into the body - it doesnt see when the line gets out of it.
-        // I must have 2 intersection points with a body so that it can be sliced, thats why I use manager.rayCast() again, but this time from B to A - that way the point, at which BA enters the body is the point at which AB leaves it!
+        // // manager.rayCast() method calls this function only when it sees that a given line gets into the body - it doesnt see when the line gets out of it.
+        // // I must have 2 intersection points with a body so that it can be sliced, thats why I use manager.rayCast() again, but this time from B to A - that way the point, at which BA enters the body is the point at which AB leaves it!
         let r1 = manager.rayCast(this.touchStartPoint, point, cc.RayCastType.All);
         let r2 = manager.rayCast(point, this.touchStartPoint, cc.RayCastType.All);
 
         let results = r1.concat(r2);
 
-        for (let i = 0; i < results.length; i++) 
-        {
-            let p = results[i].point;
-            this.ctx.circle(p.x, p.y, 5);
-        }  
-        this.ctx.fill();
+        // for (let i = 0; i < results.length; i++) 
+        // {
+        //     let p = results[i].point;
+        //     this.ctx.circle(p.x, p.y, 5);
+        // }  
+        // this.ctx.fill();
 
         this.r1 = r1;
         this.r2 = r2;
@@ -346,6 +344,6 @@ cc.Class({
     update: function (dt) 
     {
         // body maybe moving, need calc raycast results in update
-        this.recalcResults();
+        //this.recalcResults();
     },
 });
