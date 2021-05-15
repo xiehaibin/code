@@ -38,6 +38,7 @@ export default class TypeScript extends cc.Component
          * null	      null	    表示对象值缺失
          * undefined  undefined	用于初始化变量为一个未定义的值
          * never	  never	    never 是其它类型（包括 null 和 undefined）的子类型，代表从不会出现的值。
+         * NaN 属性是代表非数字值的特殊值。该属性用于指示某个值不是数字。可以把 Number 对象设置为该值,来指示其不是数字值~”
         */
         let a:number = 10;
         a = null;
