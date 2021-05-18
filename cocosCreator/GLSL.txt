@@ -1,0 +1,200 @@
+#version 330 == #version 330 core
+#version 330 compatibility 兼容老版本
+
+修饰符
+1.uniform 全局变量（整个shander一个，不是每个顶点一个）
+uniform修饰的变量为用户传递给着色器的数据，它在所有可用的着色阶段都是不变的，它必须定义为全局变量，并且存储在程序对象（Program Object）中。
+uniform可以修饰任意类型以及任意类型的聚合类型，包括结构体、数组和不透明类型等。
+在着色器中，无法写入到uniform变量，也无法改变它的值（对uniform变量进行写操作会导致编译错误），但是可以在定义时进行初始化操作，之后计算时就会用到初始化的值，
+直到这个值通过应用程序的API调用被修改。
+_color = glGetUniformLocation(_program, "_color")
+glUniform4f(_color, 0,1,0,1)
+uniform 变量在shander里复默认值无用
+glUniformMatrix4fv() 传矩阵
+
+2.varying
+varying变量是vertex和fragment shader之间做数据传递用的。一般vertex shader修改varying变量的值，然后fragment shader使用该varying变量的值。
+因此varying变量在vertex和fragment shader二者之间的声明必须是一致的。application不能使用此变量。
+vs - ps 之间进行数据传输
+
+3. in out inout  1.3
+---------------------------------
+void fun(out vec4 color) { color = color*0.5; }
+void main(){fun(_color); gl_FragColor = _color;}
+---------------------------------
+
+4.struct 结构体 struct stData{}
+
+5.attribute 自定义属性 顶点,颜色,法线都是内建的attribute （图形硬件至少提供8个顶点属性储存空间）
+---------------------------------
+1.可以为部输入 2.传任意数据（结构体）， 3.uniform每次只能传一个 4.attribute可传递数组（0~15）（数组多少个占多少个索引）
+
+attribute vec3 _position;
+opengl 
+_position = glGetAttribLocation(_position, "_position")
+glEnableVertexAttribArray(_position)
+glVertexAttribPointer(_position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), rect)
+---------------------------------
+
+6.in  支持外部输入，代码清晰 1.3
+---------------------------------
+openGL不变
+_position = glGetAttribLocation(_position, "_position")
+glEnableVertexAttribArray(_position)
+---------------------------------
+7.out vs对下一个阶段ps的输出 ps用in接受 1.3
+
+8.layout 3.0
+---------------------------------
+shander
+layout(location = 0) in vec3 _position
+c++
+不用glGetAttribLocation(_position, "_position")
+glEnableVertexAttribArray(0)
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), rect)
+
+vs
+layout(location = 0) out vec3 _outPosition  加到out前面需要410版本 最大支持0~40个
+ps
+layout(location = 0) in  vec3 _inPosition  在ps里名字可以不一致了
+
+layout(location = 0) uniform vec3 _outPosition  uniform前加需要430版本
+---------------------------------
+
+9.const 常量不是存储在GPU显存里，它存储在GPU catch里，访问速度快
+
+
+
+block 用UBO传递数据 vs与ps间共享数据
+---------------------------------
+shander
+uniform MVP
+{
+	mat4 _mat;
+}mvp;
+
+c++
+glGetUniformBlockIndex(_p, "MVP")
+---------------------------------
+
+
+
+------------------ 1.2 -----------------
+变量类型
+1.vec2/3/4
+---------------------------------
+struct vec4 {
+	union {
+		struct {float x,y,z,w};
+		struct {float r,g,b,a};
+		struct {float s,t,r,q};
+	}
+}
+---------------------------------
+
+2.sampler2D 二维纹理，只能用在ps里
+---------------------------------
+uniform sampler2D _texture
+openGL传入
+glActiveTexture(GL_TEXTURE0) 激活纹理单元
+glEnable(GL_TEXTURE_2D)      启用纹理单元
+glBindTexture(GL_TEXTURE_2D, _texture) 把这个纹理绑定到第0个单元去
+glUniform1i(shader._texture, 0) 告诉shader从第0个单元去取（0是纹理单元号）
+---------------------------------
+
+
+内置变量
+VS
+1.gl_Position  输出的顶点
+3.gl_ModelViewProjectionMatrix 模型观察投影矩阵  新版本没有这个变量
+---------------------------------
+C++ openGL
+glMatrixMode(GL_PROJECTION);               //指定以下的操作针对投影矩阵
+glLoadIdentity();                          //将投影矩阵清成单位矩阵
+//gluPerspective();
+glOrtho(0, width, height, 0, -100, 100);   //产生一个正射投影矩阵
+glMatrixMode(GL_MODELVIEW);                //openGL将模型和观察视为一个矩阵
+glLoadIdentity();
+这两个矩阵乘积的结果等于gl_ModelViewProjectionMatrix
+----------------------------------
+4.gl_Vertex 顶点
+----------------------------------
+c++ openGL
+// 传递顶点坐标
+glEnablClientState(GL_VERTEX_ARRAY) //启用
+glVertexPointer(3, GL_FLOAT, sizeof(Vertex), rect) //告诉glAPI从哪里取数据
+//vs执行的次数等于4; ps执行的次数等于光栅化像素的个数
+glDrawArrays(GL_TRIANGLE_STRIP, 0, 4) //glDrawArrays才正正把数据传到显卡里
+glDisableClientState(GL_VERTEX_ARRAY) //用完以后禁掉
+----------------------------------
+
+5.gl_Color
+6.gl_SecondaryColor
+----------------------------------
+opengl支持每个顶点多个颜色
+openGL传入
+glEnablClientState(GL_COLOR_ARRAY) //启用颜色数组
+glEnablClientState(GL_SECONDARY_COLOR_ARRAY) //启用第二颜色数组
+//颜色0-255opengl会自动规格化到0-1
+glColorPointer(...);
+glSecondaryColorPointer(...)
+----------------------------------
+
+7.gl_MultiTexCoord0~7 接受应用层输入的纹理坐标
+8.gl_TexCoord0~7 输出纹理坐标到ps里面
+----------------------------------
+gl_MultiTexCoord0 不能在ps里用
+gl_TexCoord[0] = gl_MultiTexCoord0
+每一个顶点支持多组纹理坐标
+gl_TexCoord0，gl_MultiTexCoord0支持多组 opengl1.2支持8组0~7
+
+openGL传入
+glEnablClientState(GL_TEXTURE_COORD_ARRAY) 启用纹理坐标数组
+glTexCoordPointer(...);
+----------------------------------
+
+9.gl_Normal 法线
+----------------------------------
+vec4(gl_Normal, 1) 转换成vec4
+openGL传入
+glEnablClientState(GL_NORMAL_ARRAY) 启用法线数组
+glNormalPointer(...)
+----------------------------------
+
+10.gl_FogCoord 雾化
+
+11.gl_VertexID 由glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)指定
+
+12.discard 和reture不同 终止函数执行后续管线也不在执行
+
+13.gl_PointSize 绘制点的（屏幕坐标）大小
+
+
+PS
+1.gl_FragColor 输出的颜色
+2.gl_FrontFacing 标志当前图元是不是正面图元的一部分 
+----------------------------------
+顺时针绘制是正面 逆时针绘制是背面
+glEnable(LG_CULL_FACE) 启动裁剪
+glCullFace(GL_BACK) 裁剪那一面
+gl_FrontFacing ? FrontColor : BackColor;
+----------------------------------
+3.gl_FragCoord 片元在framebuffer画面的相对位置(屏幕坐标)
+4.gl_FragData[gl_MaxDrawBuffers]
+5.gl_FragDepth 深度
+6. gl_PointCoord 点着色坐标
+
+
+
+内置函数
+1.ftransform() = gl_ModelViewProjectionMatrix * gl_Vertex;
+2.texture2D 纹理采样(传进来的是顶点0和1 在ps中是插值0~1之间)
+
+
+shander 一个面最少可以贴8张纹理(8张16张)根据硬件来，但属性有限16组
+openGL 纹理单元数量？？？？32
+
+
+-----------------------------------------------------------------------------------
+glDrawArrays(GL_POINTS, 0, 4) openGL ES2.0后不支持这种方式绘制点，必须用精灵
+    

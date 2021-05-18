@@ -1,0 +1,128 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        alphaThreshold: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+  varying vec4 outColor;
+
+  #if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+    pos = cc_matViewProj * pos;
+    #endif
+
+    #if USE_TEXTURE
+    v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+    outColor = vec4(1,0,0,1);
+
+    //gl_PointSize = 8.0;
+
+    // gl_Position 内置变量
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+
+  in vec4 v_color;
+  varying vec4 outColor;
+
+  #if USE_TEXTURE
+  in vec2 v_uv0;
+  uniform sampler2D texture;
+  #endif
+
+  vec3 u_color;	// 描边颜色
+  float u_line_size;	//描边偏移大小
+  vec2 textureSize;
+
+  // 精度高一点
+  int getIsStrokeWithAngel(float angel)  
+  {  
+      int stroke = 0;  
+      float rad = angel * 0.01745329252; // 这个浮点数是 pi / 180，角度转弧度  
+      float a = texture2D(texture, vec2(v_uv0.x + u_line_size * cos(rad) / textureSize.x, v_uv0.y + u_line_size * sin(rad) / textureSize.y)).a; 
+      // 这句比较难懂，outlineSize * cos(rad)可以理解为在x轴上投影，除以textureSize.x是因为texture2D接收的是一个0~1的纹理坐标，而不是像素坐标  
+      if (a >= 0.5)// 我把alpha值大于0.5都视为不透明，小于0.5都视为透明  
+      {  
+          stroke = 1;  
+      }  
+      return stroke;  
+  }  
+
+  void main () 
+  {
+    vec4 o = vec4(1, 1, 1, 1);
+    u_color = vec3(1,0,0);
+    u_line_size = 1.0;
+    textureSize = vec2(800, 800);
+
+    #if USE_TEXTURE
+      CCTexture(texture, v_uv0, o);
+    #endif
+
+
+    ALPHA_TEST(o);
+    //if(gl_FragCoord.y < 100.0) discard;
+    //o = gl_FrontFacing ? o*vec4(0,1,0,0.5) : o*vec4(0,0,1,0.5);
+
+
+    if (o.a < 0.5)
+    {
+      int strokeCount = 0;  
+      strokeCount += getIsStrokeWithAngel(0.0);  
+      strokeCount += getIsStrokeWithAngel(30.0);  
+      strokeCount += getIsStrokeWithAngel(60.0);  
+      strokeCount += getIsStrokeWithAngel(90.0);  
+      strokeCount += getIsStrokeWithAngel(120.0);  
+      strokeCount += getIsStrokeWithAngel(150.0);  
+      strokeCount += getIsStrokeWithAngel(180.0);  
+      strokeCount += getIsStrokeWithAngel(210.0);  
+      strokeCount += getIsStrokeWithAngel(240.0);  
+      strokeCount += getIsStrokeWithAngel(270.0);  
+      strokeCount += getIsStrokeWithAngel(300.0);  
+      strokeCount += getIsStrokeWithAngel(330.0);  
+      if (strokeCount > 0) o = vec4(1,0,0,1);
+    }
+   
+    gl_FragColor = o;
+  }
+}%
