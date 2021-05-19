@@ -1,0 +1,19 @@
+{
+  "__type__": "cc.Material",
+  "_name": "disturb",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "6892fee8-d84d-48e9-a910-7e2717e0f0ec"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true,
+        "INPUT_IS_GAMMA": true,
+        "MY_DATA": true
+      }
+    }
+  }
+}
