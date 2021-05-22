@@ -1,0 +1,114 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        dissolveTex: { value: white }
+        alphaThreshold: { value: 0.5 }
+        dissolveProgress: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+
+  #if USE_TEXTURE
+    in vec2 a_uv0;
+    out vec2 v_uv0;
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+    pos = cc_matViewProj * pos;
+    #endif
+
+    #if USE_TEXTURE
+    v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+
+  in vec4 v_color;
+
+  #if USE_TEXTURE
+    in vec2 v_uv0;
+    uniform sampler2D texture;
+    uniform sampler2D dissolveTex;
+  #endif
+
+  #if MY_DATA
+    uniform MyData {
+      float dissolveProgress;
+    };
+  #endif
+
+  void main () 
+  {
+    vec4 o = vec4(1, 1, 1, 1);
+    float dissolveRange = 0.5;
+    vec4 c = vec4(0.5, 0.0, 0.0, 1.0);
+
+    #if USE_TEXTURE
+      //CCTexture(texture, v_uv0, o);
+    #endif
+
+    //o *= v_color;
+
+
+    vec2 mainUV = v_uv0.xy;             //tiling offset
+    vec2 dissolveUV = v_uv0.xy;         //溶解UV
+
+    float progress = (1.0 - dissolveProgress) - 0.1;               //_DissolveProgress溶解进度
+    float dissolveVal = texture2D(dissolveTex, dissolveUV).r;      //溶解纹理
+
+    if (progress < dissolveVal) 
+      discard;
+    
+    //float dissolveBorderVal = clamp((progress - dissolveVal)*4.0, 0.0, 1.0); //溶解边界值
+    //dissolveBorderVal = smoothstep(0.0, dissolveRange, dissolveBorderVal);   //_DissolveRange 溶解范围
+    vec4 mainColor = texture2D(texture,  mainUV);                            //主纹理
+
+    //vec4 finalColor = mix(o, mainColor, dissolveBorderVal);                     //线性混合
+
+    vec4 col = (c * mainColor);
+    //o = mainColor;
+    //o = finalColor;
+    o = col;
+
+
+    ALPHA_TEST(o);
+
+    gl_FragColor = o;
+  }
+}%

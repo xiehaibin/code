@@ -1,0 +1,24 @@
+{
+  "__type__": "cc.Material",
+  "_name": "溶解",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "41969bd8-5937-42d7-8e65-cc0ca9f5d7ec"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "props": {
+        "dissolveProgress": 1.33,
+        "dissolveTex": {
+          "__uuid__": "09cefb5d-5e63-41a0-85ed-d476ad423c49"
+        }
+      },
+      "defines": {
+        "USE_TEXTURE": true,
+        "MY_DATA": true
+      }
+    }
+  }
+}
