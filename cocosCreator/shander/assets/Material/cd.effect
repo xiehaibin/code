@@ -1,0 +1,98 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        alphaThreshold: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+    pos = cc_matViewProj * pos;
+    #endif
+
+    #if USE_TEXTURE
+    v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+
+  in vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 v_uv0;
+  uniform sampler2D texture;
+  #endif
+
+  void main () 
+  {
+    vec4 o = vec4(1, 1, 1, 1);
+    float Progress = 0.4;
+
+    #if USE_TEXTURE
+      CCTexture(texture, v_uv0, o);
+    #endif
+
+    o *= v_color;
+
+    float circleMask = 1.0;
+    vec2 centerUV = (v_uv0 - vec2(0.5, 0.5));
+    //circleMask = smoothstep(0.0, 0.1, (1.0 - (length(centerUV) * 2.0))); //圆的边缘将柔化
+
+    float deg = atan(centerUV.x, centerUV.y);                            //-ip ~ ip
+		deg = (deg + 3.1415926) / (3.1415926 + 3.1415926);             //从新映射成0~1之间
+    float polarMask = smoothstep(0.0, 0.2, (deg - (1.0 - Progress)));   //平滑过渡0~1到之间  deg-(1.0 - Progress); //- ~ +
+		//polarMask = 0.3 + polarMask*0.7; // 原来0~1 改成 0.3~1 不希望太黑
+
+    //if (polarMask == 0.0)
+    {
+      //o = vec4(o.rgb*0.25, o.a);
+    }
+    o = o*circleMask*polarMask;
+
+    ALPHA_TEST(o);
+
+
+    gl_FragColor = o;
+  }
+}%

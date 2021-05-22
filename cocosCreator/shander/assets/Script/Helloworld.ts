@@ -12,5 +12,7 @@ export default class Helloworld extends cc.Component
     start () 
     {
         //this.glProgram
+
+        cc.log("=====================", (0/20));
     }
 }

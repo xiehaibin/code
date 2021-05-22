@@ -1,0 +1,99 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        alphaThreshold: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #endif
+
+  void main () 
+  {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+      pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+      pos = cc_matViewProj * pos;
+    #endif
+
+    //正选波 A * sin(w*d + t);
+    //A 上下浮动
+    //t 时间
+    //w 角速度
+    //d 哪个方向的变幻
+    //2.0 周期
+    //pos.y = pos.y + 0.1 * sin(-length(pos.xy) * 10.0  + cc_time.x);
+
+    #if USE_TEXTURE
+      v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+  #include <cc-global>
+
+  in vec4 v_color;
+
+  #if USE_TEXTURE
+    in vec2 v_uv0;
+    uniform sampler2D texture;
+  #endif
+
+  void main () 
+  {
+    vec4 o  = vec4(1, 1, 1, 1);
+
+    float flowSpeed = -3.0;
+
+    vec2 finalUV = vec2(0.0, 0.0);
+    // x
+		float xOffset = cc_time.x * flowSpeed;
+		// y轴的波动 * 6.283185
+		float yOffset = 0.01285*sin((v_uv0.x + xOffset) * 180.0 + cc_time.x);
+		finalUV  = v_uv0.xy + vec2(0.0, yOffset);
+
+    
+    #if USE_TEXTURE
+      CCTexture(texture, finalUV, o);
+    #endif
+    
+    ALPHA_TEST(o);
+
+    gl_FragColor = o;
+  }
+}%

@@ -1,0 +1,19 @@
+{
+  "__type__": "cc.Material",
+  "_name": "cd",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "ded785ba-a5b2-4f6d-8009-1f2881cc58a2"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true,
+        "INPUT_IS_GAMMA": true,
+        "USE_ALPHA_TEST": true
+      }
+    }
+  }
+}

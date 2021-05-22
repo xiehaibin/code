@@ -1,0 +1,18 @@
+{
+  "__type__": "cc.Material",
+  "_name": "laser",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "a9f58610-6dca-4e7a-9abd-ab9f879d97f7"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      },
+      "props": {}
+    }
+  }
+}
