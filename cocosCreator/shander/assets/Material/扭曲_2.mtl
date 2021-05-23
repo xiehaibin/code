@@ -1,0 +1,26 @@
+{
+  "__type__": "cc.Material",
+  "_name": "扭曲_2",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "f6bd92d0-e4bf-4c87-93cc-247a2752858c"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true,
+        "USE_ALPHA_TEST": true,
+        "MY_DATA": true
+      },
+      "props": {
+        "distrotStrength": 0.15,
+        "distortRotateSpeed": 1,
+        "distortTex": {
+          "__uuid__": "4b9044c2-4ecf-439e-a5d5-ccf31b79e31e"
+        }
+      }
+    }
+  }
+}

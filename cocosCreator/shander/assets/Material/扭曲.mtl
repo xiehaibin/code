@@ -1,0 +1,25 @@
+{
+  "__type__": "cc.Material",
+  "_name": "扭曲",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "1719e5f9-bceb-4ced-aaf8-a7965fde4916"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true,
+        "MY_DATA": true
+      },
+      "props": {
+        "distortStrength": -0.1,
+        "fade": 1,
+        "normalTex": {
+          "__uuid__": "4b9044c2-4ecf-439e-a5d5-ccf31b79e31e"
+        }
+      }
+    }
+  }
+}

@@ -12,9 +12,10 @@ CCEffect %{
         cullMode: none
       properties:
         texture: { value: white }
-        dissolveTex: { value: white }
+        normalTex: { value: white }
         alphaThreshold: { value: 0.5 }
-        dissolveProgress: { value: 0.5 }
+        distortStrength: { value: 0.5 }
+        fade: { value: 0.5 }
 }%
 
 
@@ -29,8 +30,8 @@ CCProgram vs %{
   out vec4 v_color;
 
   #if USE_TEXTURE
-    in vec2 a_uv0;
-    out vec2 v_uv0;
+  in vec2 a_uv0;
+  out vec2 v_uv0;
   #endif
 
   void main () {
@@ -64,49 +65,44 @@ CCProgram fs %{
   #if USE_TEXTURE
     in vec2 v_uv0;
     uniform sampler2D texture;
-    uniform sampler2D dissolveTex;
+    uniform sampler2D normalTex;
   #endif
 
   #if MY_DATA
     uniform MyData {
-      float dissolveProgress;
+      float distortStrength;
+      float fade;
     };
   #endif
 
-  void main () 
+  //它是对法线纹理的采样结果的一个反映射操作，其对应的法线纹理需要设置为Normal map的格式
+  vec3 unpackNormalmap(vec4 packednormal)
   {
+      //packednormal.x *= packednormal.w;
+      //vec3 normal;
+      //normal.xy = packednormal.xy * 2.0 - 1.0;
+      //normal.z = sqrt(1.0 - clamp(dot(normal.xy, normal.xy), 0.0, 1.0));
+      //return normal;
+
+      return packednormal.xyz * 2.0 - 1.0;
+  }
+
+  void main () {
     vec4 o = vec4(1, 1, 1, 1);
-    float dissolveRange = 0.5;
-    vec4 c = vec4(0.5, 0.0, 0.0, 1.0);
 
     #if USE_TEXTURE
       //CCTexture(texture, v_uv0, o);
     #endif
 
-    //o *= v_color;
+    vec2 uv = v_uv0.xy * vec2(1.0, 1.0);
+		vec2 distortVal = unpackNormalmap(texture2D(normalTex, uv)).rg;  //法线贴图
 
+		vec2 grabUV = v_uv0.xy + (distortVal * distortStrength * fade);
+		vec4 screenColor = texture2D(texture, grabUV);  
 
-    vec2 mainUV = v_uv0.xy;             //tiling offset
-    vec2 dissolveUV = v_uv0.xy;         //溶解UV
-
-    float progress = (1.0 - dissolveProgress) - 0.1;               //_DissolveProgress溶解进度
-    float dissolveVal = texture2D(dissolveTex, dissolveUV).r;      //溶解纹理
-
-    vec4 mainColor = texture2D(texture,  mainUV);                   //主纹理
-
-    if (progress < dissolveVal || mainColor.a == 0.0) 
-      discard;
-    
-    float dissolveBorderVal = clamp((progress - dissolveVal)*4.0, 0.0, 1.0); //溶解边界值
-    dissolveBorderVal = smoothstep(0.0, dissolveRange, dissolveBorderVal);   //_DissolveRange 溶解范围
-
-    vec4 finalColor = mix(o, mainColor, dissolveBorderVal);                     //线性混合
-
-    //vec4 col = (c * mainColor);
-    //o = mainColor;
-    o = finalColor;
-    //o = col;
-
+	  o = v_color * screenColor;
+    //float c = v_color.r * v_color.g * v_color.b;
+    //o = vec4(c,c,c, o.a);
 
     ALPHA_TEST(o);
 

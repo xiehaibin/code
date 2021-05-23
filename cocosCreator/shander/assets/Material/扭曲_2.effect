@@ -1,0 +1,128 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        distortTex: { value: white }
+        alphaThreshold: { value: 0.5 }
+        distortRotateSpeed: { value: 1.0 }
+        distrotStrength: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+    pos = cc_matViewProj * pos;
+    #endif
+
+    #if USE_TEXTURE
+    v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec4 v_color;
+
+  #if USE_TEXTURE
+    in vec2 v_uv0;
+    uniform sampler2D texture;
+    uniform sampler2D distortTex;
+  #endif
+
+  #if MY_DATA
+    uniform MyData {
+      float distortRotateSpeed;
+      float distrotStrength;
+    };
+  #endif
+
+  //它是对法线纹理的采样结果的一个反映射操作，其对应的法线纹理需要设置为Normal map的格式
+  vec3 unpackNormalmap(vec4 packednormal)
+  {
+      //packednormal.x *= packednormal.w;
+      //vec3 normal;
+      //normal.xy = packednormal.xy * 2.0 - 1.0;
+      //normal.z = sqrt(1.0 - clamp(dot(normal.xy, normal.xy), 0.0, 1.0));
+      //return normal;
+
+      return packednormal.xyz * 2.0 - 1.0;
+  }
+
+  //旋转UV
+  vec2 rotate2D(vec2 _uv, float speed)
+  {
+      vec2 uv = _uv.xy - vec2(0.5, 0.5);//移动坐标系原点
+      uv = vec2( uv.x*cos(speed) - uv.y*sin(speed), uv.x*sin(speed) + uv.y*cos(speed) );
+      //uv = vec2(uv.y*sin(speed), uv.x*cos(speed));
+      uv += vec2(0.5, 0.5);
+      uv.x = clamp(uv.x, 0.0, 1.0);
+      uv.y = clamp(uv.y, 0.0, 1.0);
+
+      return uv;
+  }
+
+  void main () 
+  {
+    vec4 o = vec4(1, 1, 1, 1);
+
+    // DrawCircle 
+		//float circleMask = DrawCircle(uv.xy, 0, _MaskSize1_Blur1.x, float2(0,_MaskSize1_Blur1.y));
+					
+		// 采样 扭曲贴图
+    vec2 uv = v_uv0.xy;
+		vec2 distortVal = unpackNormalmap(texture2D(distortTex, uv)).rg;
+		uv = uv + (distortVal * distrotStrength);
+
+	  uv = rotate2D(uv, cc_time.x*distortRotateSpeed);//旋转
+
+		//fixed4 col = i.color * circleMask * tex2D( _CircleTex, uv ) ;
+    o = v_color * texture2D(texture, uv);
+
+    o = vec4(o.rgb*1.5, o.a);
+
+    ALPHA_TEST(o);
+
+    gl_FragColor = o;
+  }
+}%

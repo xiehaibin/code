@@ -10,7 +10,7 @@
   "_techniqueData": {
     "0": {
       "props": {
-        "dissolveProgress": 1.33,
+        "dissolveProgress": -0.4,
         "dissolveTex": {
           "__uuid__": "09cefb5d-5e63-41a0-85ed-d476ad423c49"
         }
