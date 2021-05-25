@@ -1,0 +1,170 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        alphaThreshold: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+    pos = cc_matViewProj * pos;
+    #endif
+
+    #if USE_TEXTURE
+    v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+  #include <cc-global>
+  #include <cc-local>
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 v_uv0;
+  uniform sampler2D texture;
+  #endif
+
+  float iGlobalTime;
+
+  vec2 hash(vec2 p) 
+  { 
+    p=vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3))); 
+    
+    return fract(sin(p)*18.5453);
+  }
+
+  vec2 Hash22(vec2 val)
+  {
+    //fract 获取x的小数部分
+    float x = fract(sin(dot(val * 62.1, vec2(127.1, 311.7))) * 43758.5453123);
+    float y = fract(sin(dot(val , vec2(12.9898, 78.233))) * 3758.547);
+    return vec2(x, y);
+  }
+
+  float voronoi(vec2 x)
+  {
+    vec2 n = floor(x);              // cell(n)
+    vec2 f = fract(x);              // 当前像素在cell space的坐标
+    
+    float minDist = 8.0;
+    // 遍历相邻的9个cell
+    for( int j=-1; j<=1; j++ )
+    {
+      for( int i=-1; i<=1; i++ )
+      {
+          vec2  g = vec2(float(i), float(j));  // 临近的 cell id offset
+          vec2  o = Hash22( n + g );             // 影响cell的颜色  // n+g 临近的 cell(n+g) 的随机像素坐标 o (cell space)
+          
+          vec2  r = g - f + (0.5+0.5*sin(cc_time.x+6.2831*o));
+          float d = dot(r, r);
+          if(d < minDist)
+          {
+            minDist = d;
+          }
+      }
+    }
+
+    return sqrt(minDist);
+  }
+
+  vec4 _LerpColor0;
+  vec4 _LerpColor1;
+  int _BlendType;
+  // 差值
+  vec4 LerpColor(float t, vec4 a, vec4 b)
+  {
+    return mix(a, b, clamp(t, 0.0, 1.0));
+  }
+  //混合
+  vec4 BlendColor(float t, vec4 a, vec4 b, vec4 c, float midVal)
+  {
+    float4 col1 = mix(a,b, t/midVal); 
+    float4 col2 = mix(b,c, (t -midVal)/(1.0-midVal));
+    return mix(col1, col2, step(midVal, t));
+  }
+  //
+  vec3 CosBlendColor(float t, vec3 a, vec3 b, vec3 c, vec3 d)
+  {
+    return a + b * cos(6.28318 * (c *(t) +d));
+  }
+
+  void main () 
+  {
+    iGlobalTime = 1.0;
+
+    vec2 iResolution = vec2(1200.0, 1200.0);
+
+    //gl_FragCoord 片元在framebuffer画面的相对位置
+    vec2 p = vec2(gl_FragCoord.x, gl_FragCoord.y-cc_time.x*500.0) / max(iResolution.x, iResolution.y);
+
+    //float c = voronoi((14.0 + 6.0*sin(0.2*iGlobalTime)) * p);
+    p *= 15.0;
+    float c = voronoi(p);
+    float c2 = voronoi(p*vec2(0.9, 0.7) + vec2(0.5, 0.8));
+
+    c *= c2;
+    c += v_uv0.y * 1.68;
+    c *= 0.65-abs(v_uv0.x-0.5);
+    c = smoothstep(0.63, 0.9, c);
+    
+    vec4 o = vec4(c, c, c, 1.0);
+
+    vec4 finalColor = vec4(1.0, 1.0, 1.0, 1.0);
+    finalColor = LerpColor(c, vec4(1.0, 0.0, 0.0, 1.0), vec4(1.0, 1.0, 0.0, 1.0));  
+    //finalColor = BlendColor(fireMask,_BlendColor0,_BlendColorMid,_BlendColor1,_BlendColorOffset);  
+    //finalColor.rgb = CosBlendColor(fireMask,_CosBlendColor0,_CosBlendColor1,_CosBlendColor2,_CosBlendColor3);
+    
+    o *=  finalColor;
+
+    //o *= v_color;
+
+    ALPHA_TEST(o);
+
+    gl_FragColor = o;
+  }
+}%

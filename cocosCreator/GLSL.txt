@@ -189,6 +189,7 @@ gl_FrontFacing ? FrontColor : BackColor;
 内置函数
 1.ftransform() = gl_ModelViewProjectionMatrix * gl_Vertex;
 2.texture2D 纹理采样(传进来的是顶点0和1 在ps中是插值0~1之间)
+3.length  返回的是绝对值
 
 
 shander 一个面最少可以贴8张纹理(8张16张)根据硬件来，但属性有限16组

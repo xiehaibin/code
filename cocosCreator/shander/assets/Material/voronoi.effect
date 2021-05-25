@@ -1,0 +1,163 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        alphaThreshold: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+    pos = cc_matViewProj * pos;
+    #endif
+
+    #if USE_TEXTURE
+    v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 v_uv0;
+  uniform sampler2D texture;
+  #endif
+
+  vec2 Hash22(vec2 val)
+  {
+    //fract 获取x的小数部分
+    float x = fract(sin(dot(val * 62.1, vec2(127.1, 311.7))) * 43758.5453123);
+    float y = fract(sin(dot(val , vec2(12.9898, 78.233))) * 3758.547);
+    return vec2(x, y);
+  }
+
+  float Hash12(vec2 p)
+  {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 19.19);
+    return fract((p3.x + p3.y) * p3.z);
+  }
+
+  void main () 
+  {
+    const float Num = 5.0;
+    vec4 o = vec4(1, 1, 1, 1);
+
+    vec2 uv = v_uv0;
+    uv *= Num;
+
+    // 画格子
+    vec2 uv1 = fract(uv);  // 获取x的小数部分
+    CCTexture(texture, uv1, o);
+    if (uv1.x > 0.7 && uv1.y > 0.7) o = vec4(1, 0, 0, 1);
+
+    /*
+    vec2 gridId = floor(uv);    // 返回<=x的最大整数  因为uv也乘了5
+    vec2 hash = Hash22(gridId); // 取这个格子里的随机值
+    if (length(uv - (gridId + hash)) <= 0.05)
+    {
+      o = vec4(1, 0, 0, 1);
+    }
+    else
+    */
+
+    /*
+    {
+      float minDist = 100.0;
+      for (float i = 0.0; i < 5.0; ++i)
+      {
+        for (float j = 0.0; j < 5.0; ++j)
+        {
+          vec2 id = vec2(i, j);
+          vec2 h = Hash22(id);   //这个随机值
+          vec2 pos = id + h;
+          float dist = length(uv - pos);
+          if (dist < minDist)
+          {
+            minDist = dist;
+          }
+        }
+      }
+      o = vec4(minDist, minDist, minDist, 1.0);
+    }
+    */
+
+    /*
+    // 优化
+    {
+      vec2 gridId = floor(uv);
+      float minDist = 1000.0;
+      for (float i = -1.0; i <= 1.0; ++i)
+      {
+        for (float j = -1.0; j <= 1.0; ++j)
+        {
+          vec2 id = gridId + vec2(i, j);
+          vec2 h = Hash22(id);   //这个随机值
+          h = (sin(cc_time.x + h * 6.28)) * 0.5 + 0.5; // -1~1 -> 0~1
+          vec2 pos = id + h;
+          vec2 diff = uv - pos;
+          float dist = dot(diff, diff);
+          if (dist < minDist)
+          {
+            minDist = dist;
+          }
+        }
+      }
+      minDist = sqrt(minDist);
+      o = vec4(minDist, minDist, minDist, 1.0);
+    }
+
+    */
+  
+  
+
+    o *= v_color;
+
+    ALPHA_TEST(o);
+
+    gl_FragColor = o;
+  }
+}%

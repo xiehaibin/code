@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "voronoi - 001",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "eaca43e5-ef67-46db-b7cc-33615141122f"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}
