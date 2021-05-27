@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "下雪",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "587c434f-b387-4803-9afe-675de429ba2a"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}
