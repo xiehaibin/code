@@ -1,0 +1,177 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      blendState:
+        targets:
+        - blend: true
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        alphaThreshold: { value: 0.5 }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+  in vec4 a_color;
+  out vec4 v_color;
+
+  #if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+    #else
+    pos = cc_matViewProj * pos;
+    #endif
+
+    #if USE_TEXTURE
+    v_uv0 = a_uv0;
+    #endif
+
+    v_color = a_color;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+  
+  #include <alpha-test>
+  #include <texture>
+  #include <cc-global>
+
+  in vec4 v_color;
+
+  #if USE_TEXTURE
+    in vec2 v_uv0;
+    uniform sampler2D texture;
+  #endif
+
+  const float _SeaHigh = 0.6;
+  const float _LayerGapPower = 0.5;
+
+  const vec4 _TSkyColor = vec4(0.0,   0.196, 0.615, 1.0);
+  const vec4 _BSkyColor = vec4(0.0,   0.807, 0.980, 1.0);
+  const vec4 _TSeaColor = vec4(0.768, 0.925, 1.0,   1.0);
+  const vec4 _BSeaColor = vec4(0.0,   0.200, 0.317, 1.0);
+
+  const vec4  _SkyLineColor = vec4(1.0, 1.0, 1.0, 1.0);  // 天空色
+  const float _SkyLinePower = 10.0;           // 
+  const float _SkyLineFactor = 1.0;           // 天空亮度系数
+
+  const float LAYER_COUNT = 12.0;
+  const float _PI2 = 6.18;
+
+  const float _AmptPower  = 0.2;
+  const float _AmptFactor = 0.01;
+
+  float _SubWaveAmptFactor = 0.2;
+  float _SubWaveFrequenceFactor = 0.6;
+  float _SubeWaveOffsetBaseSpd    = 1.6;
+  float _SubeWaveOffsetHashFactor = 1.8;
+
+
+  float Hash11(float p)
+  {
+    vec3 p3 = fract(vec3(p,p,p) * 0.10310);
+    p3 += dot(p3, p3.yzx + 19.19);
+    return fract((p3.x + p3.y) * p3.z); 
+  }
+
+  //Remap    (0,        _SeaHigh,   0,        1,         uv.y);
+  //将oa与ob中的uv.y  映射到 na与nb中
+  float Remap(float oa, float ob,   float na, float nb,  float val)
+  {   //0.5-0    0.5-0     1        0
+	    return (val-oa)/(ob-oa) * (nb-na) + na; 
+  }
+
+  //波浪
+  float Wave(float x, float layer)
+	{
+      float percent = 1.0 - layer/LAYER_COUNT;
+      float frequence = _PI2 * (layer + 3.0);                      //频率
+      float amptitude = pow(percent, _AmptPower) * _AmptFactor;  //振幅percent的 _AmptPower次方
+      float offset = _PI2 * Hash11(layer);
+      float result = 0.0;
+      float spd = _SubeWaveOffsetBaseSpd;
+      
+      for (float i = 0.0; i < 6.0; i++)
+      {       
+          result += sin(x*frequence  +  offset  +  Hash11(i + offset)*_PI2  +  cc_time.x*_PI2*spd) * amptitude;
+          frequence *= _SubWaveFrequenceFactor;  
+          amptitude *= _SubWaveAmptFactor;
+          spd       *= _SubeWaveOffsetHashFactor;
+      }
+
+      return result;
+  }
+
+  // 绘制海洋
+  vec4 DrawSea(vec2 uv)
+  {
+      float y = 1.0 - uv.y;
+
+      float layerId = LAYER_COUNT;
+      for (float layer = 0.0; layer < LAYER_COUNT; layer++)
+      {
+          float percent = layer/LAYER_COUNT;
+          percent = pow(percent, _LayerGapPower);   //_LayerGapPower>1:近小远大  _LayerGapPower<1:近大远小
+          float curLayerHigh = percent * _SeaHigh;
+          curLayerHigh += Wave(uv.x, layer);
+          if (y < curLayerHigh)
+          {
+              layerId = layer;
+              break;
+          }
+      }
+
+      return mix(_BSeaColor, _TSeaColor, layerId/LAYER_COUNT);
+  }
+
+  // 绘制天空
+  vec4 DrawSky(float y)
+  {
+      float val = Remap(_SeaHigh, 1.0,  0.0, 1.0,  y);
+      vec4 color = mix(_TSkyColor, _BSkyColor, val);
+      return color + _SkyLineColor * pow(1.0-val, _SkyLinePower) * _SkyLineFactor;
+  }
+
+  void main () 
+  {
+    vec4 o = vec4(1, 1, 1, 1);
+
+    float y = 1.0 - v_uv0.y;
+    if (y >_SeaHigh)
+    {
+      o = DrawSky(y);
+    }
+    else
+    {
+      o = DrawSea(v_uv0);
+    }
+    
+    o *= v_color;
+
+    ALPHA_TEST(o);
+
+    gl_FragColor = o;
+  }
+}%

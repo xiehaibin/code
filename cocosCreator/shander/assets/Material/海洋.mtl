@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "海洋",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "04ab2424-73c1-4daf-a9c4-828801eccb65"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}

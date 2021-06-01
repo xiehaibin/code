@@ -13,6 +13,7 @@ export default class Helloworld extends cc.Component
     {
         //this.glProgram
 
-        cc.log("=====================", (0/20));
+        cc.log("=====================", Math.pow(2,0.5));
+        cc.log("=====================", (0.7 - (-0.8)) / (0.7 - (-0.8)) * (0.3 - 0.2) + 0.2);
     }
 }
